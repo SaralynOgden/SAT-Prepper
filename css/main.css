@@ -1,0 +1,51 @@
+html, body {
+  margin: 0;
+  height: 100%;
+  background-color: #DED7CF;
+}
+
+main {
+  height: 100%;
+}
+
+.nav-wrapper {
+  background-color: #A1504D;
+}
+
+.brand-logo {
+  color: #DED7CF !important;
+}
+
+#question-row {
+  margin: 150px 0px 0px 0px;
+}
+
+.card {
+  overflow:auto;
+}
+
+#next, #check {
+  background-color: #99BEC6;
+}
+
+#question {
+  font-size: 18px;
+  margin: 0px 0px 10px 0px;
+}
+
+.answer {
+  margin: 10px !important;
+  color: red;
+}
+
+label {
+  color: black;
+}
+
+.card-btn {
+  margin: 0px 0px 15px 0px;
+}
+
+#pre-question-row {
+  display: none;
+}
