@@ -4,7 +4,7 @@ $(document).ready(function() {
   let currentAnswer;
   let currentAnswerButton;
 
-  // Gets a random Integer between the min and the max, inclusive
+  // Gets a random integer between the min and the max, inclusive
   const getRandomInt = function(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
@@ -78,7 +78,6 @@ $(document).ready(function() {
       return `Simplify ${simplification.eqn()}`;
     }
     this.answerSet = function() {
-      console.log("in answer set, current answer is " + currentAnswer);
       const wrong1 = new Simplification();
       const wrong2 = new Simplification();
       const wrong3 = new Simplification();
@@ -108,7 +107,7 @@ $(document).ready(function() {
     } else if (coeff === "-1") {
       return `-${term}`;
     } else {
-      return `${coeff} ${term}`;
+      return `${coeff}${term}`;
     }
   };
 
@@ -211,16 +210,50 @@ $(document).ready(function() {
     };
   };
 
+  const linearEqnWithParticularIntercept = function(intercept) {
+    return `y = ${getRandomInt(1, 40)} x + ${intercept}`;
+  }
+
   // Generates three incorrect answer for horizontal linear equations
   const getIncorrectHorzLEqns = function(originalLine) {
     let incorrectAnswers = [];
+    let vertLEqnNotPresent = true;
+    let xForYNotPresent = true;
+    for (let i = 0; i < 3; i++) {
+      const questionType = Math.random();
 
+      if (questionType < 1 / 3 && vertLEqnNotPresent) {
+        vertLEqnNotPresent = false;
+        incorrectAnswers.push(`x = ${originalLine.pt1.y}`);
+      } else if (questionType < 2 / 3 && xForYNotPresent) {
+        xForYNotPresent = false;
+        incorrectAnswers.push(`y = ${originalLine.pt1.x}`);
+      } else {
+        incorrectAnswers.push(linearEqnWithParticularIntercept(originalLine.pt1.y));
+      }
+    }
+    return incorrectAnswers;
   };
 
   // Generates three incorrect answer for vertical linear equations
   const getIncorrectVertLEqns = function(originalLine) {
     let incorrectAnswers = [];
+    let horzLEqnNotPresent = true;
+    let yForXNotPresent = true;
+    for (let i = 0; i < 3; i++) {
+      const questionType = Math.random();
 
+      if (questionType < 1 / 3 && horzLEqnNotPresent) {
+        horzLEqnNotPresent = false;
+        incorrectAnswers.push(`y = ${originalLine.pt1.x}`);
+      } else if (questionType < 2 / 3 && yForXNotPresent) {
+        yForXNotPresent = false;
+        incorrectAnswers.push(`x = ${originalLine.pt1.y}`);
+      } else {
+        incorrectAnswers.push(linearEqnWithParticularIntercept(originalLine.pt1.x));
+      }
+    }
+    return incorrectAnswers;
   };
 
   // Generates three incorrect answers for diagonal linear equations
@@ -230,18 +263,18 @@ $(document).ready(function() {
     let xIntMistakeLinePresent = false;
 
     for (let i = 0; i < 3; i++) {
-      const questionNum = Math.random();
+      const questionType = Math.random();
 
-      if (questionNum < 1 / 6 && !xIntMistakeLinePresent) {
+      if (questionType < 1 / 8 && !xIntMistakeLinePresent) {
         let xIntMistake = new XIntMistakeLine(originalLine);
 
         incorrectAnswers.push(xIntMistake.eqn());
         xIntMistakeLinePresent = true;
-      } else if (questionNum < 2 / 3) {
+      } else if (questionType < 5 / 8) {
         let parallel = new ParallelLine(originalLine);
 
         incorrectAnswers.push(parallel.eqn());
-      } else if (questionNum < 5 / 6 && !perpWithSameYIntPresent) {
+      } else if (questionType < 3 / 4 && !perpWithSameYIntPresent) {
         let perpendicular = new PerpendicularLine(originalLine);
 
         incorrectAnswers.push(perpendicular.eqnWithSameYInt());
@@ -286,7 +319,16 @@ $(document).ready(function() {
       return this.line.eqn();
     };
     this.answerSet = function() {
-      return getAnswerSet(currentAnswer, getIncorrectDiagLEqns(this.line));
+      const slope = mathToString(this.line.slope());
+
+      switch (slope) {
+        case 'Infinity':
+          return getAnswerSet(this.answer(), getIncorrectVertLEqns(this.line));
+        case '0':
+          return getAnswerSet(this.answer(), getIncorrectHorzLEqns(this.line));
+        default:
+          return getAnswerSet(this.answer(), getIncorrectDiagLEqns(this.line));
+      }
     };
   };
 
@@ -303,7 +345,16 @@ $(document).ready(function() {
       return this.line.eqn();
     };
     this.answerSet = function() {
-      return getAnswerSet(currentAnswer, getIncorrectDiagLEqns(this.line));
+      const slope = mathToString(this.line.slope());
+
+      switch (slope) {
+        case 'Infinity':
+          return getAnswerSet(this.answer(), getIncorrectVertLEqns(this.line));
+        case '0':
+          return getAnswerSet(this.answer(), getIncorrectHorzLEqns(this.line));
+        default:
+          return getAnswerSet(this.answer(), getIncorrectDiagLEqns(this.line));
+      }
     };
   };
 
@@ -326,7 +377,16 @@ $(document).ready(function() {
       return this.line.eqn();
     };
     this.answerSet = function() {
-      return getAnswerSet(currentAnswer, getIncorrectDiagLEqns(this.line));
+      const slope = mathToString(this.line.slope());
+
+      switch (slope) {
+        case 'Infinity':
+          return getAnswerSet(this.answer(), getIncorrectVertLEqns(this.line));
+        case '0':
+          return getAnswerSet(this.answer(), getIncorrectHorzLEqns(this.line));
+        default:
+          return getAnswerSet(this.answer(), getIncorrectDiagLEqns(this.line));
+      }
     };
   };
 
@@ -337,31 +397,17 @@ $(document).ready(function() {
   // const other = [i];
   const questionCategories = [heartOfAlgebra];
 
-  // Generates the answer that will be shown the next time the user presses
-  // the button
-  const getNextAnswer = function() {
-    if ('answer' in currentQuestion) {
-      currentAnswer = currentQuestion.answer();
-    } else {
-      const start = new Date().getTime();
-
-      $.ajax({
-        url: (`https://cors-anywhere.herokuapp.com/http://api.wolframalpha.com/v2/query?appid=EP8459-2R5UW68LXJ&input=${encodeURIComponent(currentQuestion.wolframQuestion())}&format=html`),
-        dataType: 'text',
-        success(data) {
-          if ($(data).find('[title="Result"]').length === 1) {
-            currentAnswer = `\`${$(data).find('[title="Result"]')
-                            .find('img').attr('title').toString()}\``;
-          } else if ($(data).find('[title="Results"]').length === 1) {
-            currentAnswer = `\`${$(data).find('[title="Results"]')
-                            .find('img').attr('title').toString()}\``;
-          }
-          const end = new Date().getTime();
-          console.log(end - start);
-        }
-      });
+  // Sets the answers for a question
+  const setAnswers = function(answerLabelArr, answerArr) {
+    console.log(answerLabelArr);
+    console.log(answerArr);
+    let anythingHasFrac = false;
+    for (let i = 0; i < 4; i++) {
+      if (answerArr[i].indexOf('\`') !== -1) {
+        answerLabelArr[i].style.margin = '20px 0px 20px 0px';
+      }
+      answerLabelArr[i].innerHTML = answerArr[i];
     }
-    console.log(currentAnswer);
   };
 
   // Generates the question that will be shown the next time the user presses
@@ -371,41 +417,8 @@ $(document).ready(function() {
             questionCategories[getRandomInt(0, questionCategories.length - 1)];
     const QuestionSubCategory =
             questionCategory[getRandomInt(0, questionCategory.length - 1)];
-
     currentQuestion = new QuestionSubCategory();
-    console.log(currentQuestion.question());
-    getNextAnswer();
-  };
 
-  const enableCheckButton = function() {
-    $('#check').removeClass('disabled');
-    $(':radio').off('click');
-  };
-
-  // Provides feedback to the user if they got the question right or not
-  const checkAnswer = function() {
-    $('#check').text('Next').attr('id', 'next');
-    const $userAnswer = $('input:checked');
-
-    if ($userAnswer.attr('id') !== currentAnswerButton) {
-      $userAnswer.siblings('label').css('color', 'red');
-    }
-    $('#next').click(setQuestion);
-  };
-
-  // Sets the answers for a question
-  const setAnswers = function(answerLabelArr, answerArr) {
-    let anythingHasFrac = false;
-    for (let i = 0; i < 4; i++) {
-      if (answerArr[i].indexOf('\`') !== -1) {
-        answerLabelArr[i].style.margin = '0px 0px 30px 0px';
-      }
-      answerLabelArr[i].innerHTML = answerArr[i];
-    }
-  };
-
-  // Sets a question to the last question generated
-  const setQuestion = function() {
     const $questionCard = $(`<div class="card">\
       <div class="card-content">\
         <p id="question">${currentQuestion.question()}</p>\
@@ -419,27 +432,49 @@ $(document).ready(function() {
             <label for="b"></label>\
           </p>\
           <p class="answer">\
-            <input class="with-gap" name="group1" type="radio" id="c"  />\
+            <input class="with-gap red" name="group1" type="radio" id="c"  />\
             <label for="c"></label>\
           </p>\
           <p class="answer">\
             <input class="with-gap" name="group1" type="radio" id="d"/>\
             <label for="d"></label>\
           </p>\
-          <a class="waves-effect waves-light btn right disabled card-btn" \
-            id="check">Check</a>\
         </form>\
       </div>\
     </div>`);
 
-    $('#card-holder').empty().append($questionCard);
+    $('#card-processor').append($questionCard);
+    setAnswers($('#card-processor label').toArray(), currentQuestion.answerSet());
 
-    setAnswers($('.answer label').toArray(), currentQuestion.answerSet());
+    var cardProcessor = document.getElementById('card-processor');
 
+    MathJax.Hub.Queue(["Typeset",MathJax.Hub, cardProcessor]);
+  };
+
+  const enableCheckButton = function() {
+    $('#check').removeClass('disabled');
+    $(':radio').off('click');
+  };
+
+  // Provides feedback to the user if they got the question right or not
+  const checkAnswer = function() {
+    $('#check').off('click').text('Next').attr('id', 'next');
+    const $userAnswer = $('input:checked');
+
+    if ($userAnswer.attr('id') !== currentAnswerButton) {
+      $userAnswer.siblings('label').css('color', 'red');
+    }
+    $('#next').click(setQuestion);
+  };
+
+  // Sets a question to the last question generated
+  const setQuestion = function() {
+    $('#card-holder').empty().append($(document.getElementById('card-processor').children[0].outerHTML));
+    $('#card-holder form').append($('<a class="waves-effect waves-light btn right disabled card-btn" \
+              id="check">Check</a>'));
+    $('#card-processor').empty();
     $('#check').click(checkAnswer).click(getNextQuestion);
     $(':radio').click(enableCheckButton);
-
-    MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
   };
 
   // Generate the first question and answer before the user clicks
