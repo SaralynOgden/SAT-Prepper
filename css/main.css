@@ -15,12 +15,9 @@ main h3 {
   font-weight: bold;
 }
 
-.btn:hover {
+.card-btn:hover {
   background-color: #475B68;
   color: #A7C5CC;
-}
-
-.btn:hover {
   cursor: pointer;
 }
 
@@ -69,6 +66,10 @@ label {
 
 .card-btn {
   margin: 0px 0px 15px 0px;
+}
+
+#check:disabled {
+  cursor: not-allowed;
 }
 
 [type="radio"]:not(:checked)+label, [type="radio"]:checked+label {

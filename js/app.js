@@ -2,7 +2,6 @@ $(document).ready(function() {
   'use strict';
   let currentQuestion;
   let currentAnswer;
-  let currentAnswerButton;
 
   // Gets a random integer between the min and the max, inclusive
   const getRandomInt = function(min, max) {
@@ -301,6 +300,7 @@ $(document).ready(function() {
 
   // Generates a shuffled set of answers (one correct, three incorrect)
   const getAnswerSet = function(answer, incorrectAnswers) {
+    currentAnswer = answer;
     incorrectAnswers.push(answer);
     shuffle(incorrectAnswers);
     return incorrectAnswers;
@@ -398,15 +398,15 @@ $(document).ready(function() {
   const questionCategories = [heartOfAlgebra];
 
   // Sets the answers for a question
-  const setAnswers = function(answerLabelArr, answerArr) {
-    console.log(answerLabelArr);
-    console.log(answerArr);
-    let anythingHasFrac = false;
+  const getNextAnswers = function(answerLabelArr, answerArr) {
     for (let i = 0; i < 4; i++) {
       if (answerArr[i].indexOf('\`') !== -1) {
-        answerLabelArr[i].style.margin = '20px 0px 20px 0px';
+        answerLabelArr[i].style.margin = '25px 0px 25px 0px';
       }
       answerLabelArr[i].innerHTML = answerArr[i];
+      if (answerArr[i] === currentAnswer) {
+        answerLabelArr[i].id = "correct-answer";
+      }
     }
   };
 
@@ -439,12 +439,14 @@ $(document).ready(function() {
             <input class="with-gap" name="group1" type="radio" id="d"/>\
             <label for="d"></label>\
           </p>\
+          <button class="waves-effect waves-light btn right disabled card-btn" \
+            id="check" type="button" disabled>Check</button>\
         </form>\
       </div>\
     </div>`);
 
     $('#card-processor').append($questionCard);
-    setAnswers($('#card-processor label').toArray(), currentQuestion.answerSet());
+    getNextAnswers($('#card-processor label').toArray(), currentQuestion.answerSet());
 
     var cardProcessor = document.getElementById('card-processor');
 
@@ -453,27 +455,33 @@ $(document).ready(function() {
 
   const enableCheckButton = function() {
     $('#check').removeClass('disabled');
+    $('#check').prop('disabled', false);
     $(':radio').off('click');
   };
 
   // Provides feedback to the user if they got the question right or not
-  const checkAnswer = function() {
-    $('#check').off('click').text('Next').attr('id', 'next');
-    const $userAnswer = $('input:checked');
-
-    if ($userAnswer.attr('id') !== currentAnswerButton) {
-      $userAnswer.siblings('label').css('color', 'red');
+  const checkAnswer = function(start) {
+    return function() {
+      $('#check').off('click').text('Next').attr('id', 'next');
+      const $userAnswer = $('input:checked').siblings('label');
+      $('#correct-answer').css('color', '#22A552');
+      if ($userAnswer.attr('id') !== 'correct-answer') {
+         $userAnswer.css('color', '#CE1C1C');
+      }
+      const end = new Date().getTime();
+      console.log(end - start);
+      const $userTime = $(`<p class="right" id="user-time">${(end - start) / 1000}s</p><br/>`);
+      $('#next').before($userTime);
+      $('#next').click(setQuestion);
     }
-    $('#next').click(setQuestion);
   };
 
   // Sets a question to the last question generated
   const setQuestion = function() {
+    const start = new Date().getTime();
     $('#card-holder').empty().append($(document.getElementById('card-processor').children[0].outerHTML));
-    $('#card-holder form').append($('<a class="waves-effect waves-light btn right disabled card-btn" \
-              id="check">Check</a>'));
     $('#card-processor').empty();
-    $('#check').click(checkAnswer).click(getNextQuestion);
+    $('#check').click(checkAnswer(start)).click(getNextQuestion);
     $(':radio').click(enableCheckButton);
   };
 
