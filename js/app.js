@@ -19,6 +19,17 @@ $(document).ready(function() {
     }
   };
 
+  // Shuffles an array
+  const shuffle = function(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const randIndex = getRandomInt(0, 3);
+      const temp = arr[randIndex];
+
+      arr[randIndex] = arr[i];
+      arr[i] = temp;
+    }
+  };
+
   // Constructor for points
   const Pt = function(xcoord, ycoord) {
     this.x = xcoord;
@@ -65,23 +76,27 @@ $(document).ready(function() {
 
       return eqn;
     };
-  }
+  };
 
   // Constructor for term simplification questions
   const SimplificationQuestion = function() {
     const simplification = new Simplification();
+
     this.question = function() {
       return `Simplify \`${simplification.eqn()}\``;
     };
     this.wolframQuestion = function() {
       return `Simplify ${simplification.eqn()}`;
-    }
+    };
     this.answerSet = function() {
       const wrong1 = new Simplification();
       const wrong2 = new Simplification();
       const wrong3 = new Simplification();
-      const answers = [`\`${wrong1.eqn()}\``, `\`${wrong2.eqn()}\``, `\`${wrong3.eqn()}\``, currentAnswer];
+      const answers = [`\`${wrong1.eqn()}\``, `\`${wrong2.eqn()}\``,
+                        `\`${wrong3.eqn()}\``, currentAnswer];
+
       shuffle(answers);
+
       return answers;
     };
   };
@@ -101,9 +116,9 @@ $(document).ready(function() {
   // Checks if the leading coefficient of a term is one
   // Returns just the term if the leading coef is one and coef*term otherwise
   const coeffCheck = function(coeff, term) {
-    if (coeff === "1") {
+    if (coeff === '1') {
       return term;
-    } else if (coeff === "-1") {
+    } else if (coeff === '-1') {
       return `-${term}`;
     } else {
       return `${coeff}${term}`;
@@ -203,21 +218,22 @@ $(document).ready(function() {
       return originalLine.slope();
     };
     this.eqn = function() {
-      let yIntercept = originalLine.xIntercept();
+      const yIntercept = originalLine.xIntercept();
 
       return formatDiagLinearEqn(mathToString(this.slope()), yIntercept);
     };
   };
 
-  const linearEqnWithParticularIntercept = function(intercept) {
+  const linearEqnWithGivenIntercept = function(intercept) {
     return `y = ${getRandomInt(1, 40)} x + ${intercept}`;
-  }
+  };
 
   // Generates three incorrect answer for horizontal linear equations
   const getIncorrectHorzLEqns = function(originalLine) {
-    let incorrectAnswers = [];
+    const incorrectAnswers = [];
     let vertLEqnNotPresent = true;
     let xForYNotPresent = true;
+
     for (let i = 0; i < 3; i++) {
       const questionType = Math.random();
 
@@ -228,17 +244,19 @@ $(document).ready(function() {
         xForYNotPresent = false;
         incorrectAnswers.push(`y = ${originalLine.pt1.x}`);
       } else {
-        incorrectAnswers.push(linearEqnWithParticularIntercept(originalLine.pt1.y));
+        incorrectAnswers.push(linearEqnWithGivenIntercept(originalLine.pt1.y));
       }
     }
+
     return incorrectAnswers;
   };
 
   // Generates three incorrect answer for vertical linear equations
   const getIncorrectVertLEqns = function(originalLine) {
-    let incorrectAnswers = [];
+    const incorrectAnswers = [];
     let horzLEqnNotPresent = true;
     let yForXNotPresent = true;
+
     for (let i = 0; i < 3; i++) {
       const questionType = Math.random();
 
@@ -249,15 +267,16 @@ $(document).ready(function() {
         yForXNotPresent = false;
         incorrectAnswers.push(`x = ${originalLine.pt1.y}`);
       } else {
-        incorrectAnswers.push(linearEqnWithParticularIntercept(originalLine.pt1.x));
+        incorrectAnswers.push(linearEqnWithGivenIntercept(originalLine.pt1.x));
       }
     }
+
     return incorrectAnswers;
   };
 
   // Generates three incorrect answers for diagonal linear equations
   const getIncorrectDiagLEqns = function(originalLine) {
-    let incorrectAnswers = [];
+    const incorrectAnswers = [];
     let perpWithSameYIntPresent = false;
     let xIntMistakeLinePresent = false;
 
@@ -265,21 +284,21 @@ $(document).ready(function() {
       const questionType = Math.random();
 
       if (questionType < 1 / 8 && !xIntMistakeLinePresent) {
-        let xIntMistake = new XIntMistakeLine(originalLine);
+        const xIntMistake = new XIntMistakeLine(originalLine);
 
         incorrectAnswers.push(xIntMistake.eqn());
         xIntMistakeLinePresent = true;
       } else if (questionType < 5 / 8) {
-        let parallel = new ParallelLine(originalLine);
+        const parallel = new ParallelLine(originalLine);
 
         incorrectAnswers.push(parallel.eqn());
       } else if (questionType < 3 / 4 && !perpWithSameYIntPresent) {
-        let perpendicular = new PerpendicularLine(originalLine);
+        const perpendicular = new PerpendicularLine(originalLine);
 
         incorrectAnswers.push(perpendicular.eqnWithSameYInt());
         perpWithSameYIntPresent = true;
       } else {
-        let perpendicular = new PerpendicularLine(originalLine);
+        const perpendicular = new PerpendicularLine(originalLine);
 
         incorrectAnswers.push(perpendicular.eqn());
       }
@@ -288,23 +307,14 @@ $(document).ready(function() {
     return incorrectAnswers;
   };
 
-  // Shuffles an array
-  const shuffle = function(arr) {
-    for (let i = arr.length - 1; i > 0; i--) {
-      let randIndex = getRandomInt(0, 3);
-      let temp = arr[randIndex];
-      arr[randIndex] = arr[i];
-      arr[i] = temp;
-    }
-  };
-
   // Generates a shuffled set of answers (one correct, three incorrect)
   const getAnswerSet = function(answer, incorrectAnswers) {
     currentAnswer = answer;
     incorrectAnswers.push(answer);
     shuffle(incorrectAnswers);
+
     return incorrectAnswers;
-  }
+  };
 
   // Constructor for questions asking to find the equation of a line from
   // two points
@@ -363,7 +373,6 @@ $(document).ready(function() {
   const LineFromXIntAndSlope = function() {
     this.line = new LinearEqn();
     this.question = function() {
-
       // redefine the line if it doesn't have an x-intercept (ie: y = 3)
       if (this.line.slope().n === 0) {
         this.line = new LinearEqn();
@@ -392,6 +401,7 @@ $(document).ready(function() {
 
   const heartOfAlgebra = [LineFromPts, LineFromPtAndSlope,
                           LineFromXIntAndSlope];
+
   // const passportToAdvancedMath = [SimplificationQuestion];
   // const problemSolving = [];
   // const other = [i];
@@ -400,12 +410,12 @@ $(document).ready(function() {
   // Sets the answers for a question
   const getNextAnswers = function(answerLabelArr, answerArr) {
     for (let i = 0; i < 4; i++) {
-      if (answerArr[i].indexOf('\`') !== -1) {
+      if (answerArr[i].indexOf('`') !== -1) {
         answerLabelArr[i].style.margin = '25px 0px 25px 0px';
       }
       answerLabelArr[i].innerHTML = answerArr[i];
       if (answerArr[i] === currentAnswer) {
-        answerLabelArr[i].id = "correct-answer";
+        answerLabelArr[i].id = 'correct-answer';
       }
     }
   };
@@ -417,6 +427,7 @@ $(document).ready(function() {
             questionCategories[getRandomInt(0, questionCategories.length - 1)];
     const QuestionSubCategory =
             questionCategory[getRandomInt(0, questionCategory.length - 1)];
+
     currentQuestion = new QuestionSubCategory();
 
     const $questionCard = $(`<div class="card">\
@@ -446,9 +457,10 @@ $(document).ready(function() {
     </div>`);
 
     $('#card-processor').append($questionCard);
-    getNextAnswers($('#card-processor label').toArray(), currentQuestion.answerSet());
+    getNextAnswers($('#card-processor label').toArray(),
+                      currentQuestion.answerSet());
 
-    var cardProcessor = document.getElementById('card-processor');
+    const cardProcessor = document.getElementById('card-processor');
 
     MathJax.Hub.Queue(["Typeset",MathJax.Hub, cardProcessor]);
   };
@@ -459,30 +471,34 @@ $(document).ready(function() {
     $(':radio').off('click');
   };
 
+  // Sets a question to the last question generated
+  const setQuestion = function() {
+    const start = new Date().getTime();
+
+    $('#card-holder').empty().append(
+      $(document.getElementById('card-processor').children[0].outerHTML));
+    $('#card-processor').empty();
+    $('#check').click(checkAnswer(start)).click(getNextQuestion);
+    $(':radio').click(enableCheckButton);
+  };
+
   // Provides feedback to the user if they got the question right or not
   const checkAnswer = function(start) {
     return function() {
       $('#check').off('click').text('Next').attr('id', 'next');
       const $userAnswer = $('input:checked').siblings('label');
+
       $('#correct-answer').css('color', '#22A552');
       if ($userAnswer.attr('id') !== 'correct-answer') {
-         $userAnswer.css('color', '#CE1C1C');
+        $userAnswer.css('color', '#CE1C1C');
       }
       const end = new Date().getTime();
-      console.log(end - start);
-      const $userTime = $(`<p class="right" id="user-time">${(end - start) / 1000}s</p><br/>`);
+      const $userTime = $(`<p class="right" id="user-time">
+                          ${(end - start) / 1000}s</p><br/>`);
+
       $('#next').before($userTime);
       $('#next').click(setQuestion);
-    }
-  };
-
-  // Sets a question to the last question generated
-  const setQuestion = function() {
-    const start = new Date().getTime();
-    $('#card-holder').empty().append($(document.getElementById('card-processor').children[0].outerHTML));
-    $('#card-processor').empty();
-    $('#check').click(checkAnswer(start)).click(getNextQuestion);
-    $(':radio').click(enableCheckButton);
+    };
   };
 
   // Generate the first question and answer before the user clicks
