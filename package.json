@@ -1,0 +1,31 @@
+{
+  "name": "q1_project",
+  "version": "1.0.0",
+  "description": "This project is an SAT question generator.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SaralynOgden/q1_project.git"
+  },
+  "author": "saralyn ogden <Saralyn.Ogden@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SaralynOgden/q1_project/issues"
+  },
+  "homepage": "https://github.com/SaralynOgden/q1_project#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "morgan": "^1.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.10.2"
+  },
+  "scripts": {
+    "nodemon": "nodemon server.js"
+  }
+}
