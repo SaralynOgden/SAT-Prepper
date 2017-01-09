@@ -4,8 +4,7 @@
   "description": "This project is an SAT question generator.",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "nodemon": "nodemon server.js"
   },
   "repository": {
     "type": "git",
@@ -20,12 +19,13 @@
   "dependencies": {
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
+    "grunt": "^1.0.1",
     "morgan": "^1.7.0"
   },
   "devDependencies": {
+    "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-sass": "^1.2.1",
     "nodemon": "^1.10.2"
-  },
-  "scripts": {
-    "nodemon": "nodemon server.js"
   }
 }

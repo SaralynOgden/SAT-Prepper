@@ -1,3 +1,4 @@
+
 $(document).ready(function() {
   'use strict';
   let currentQuestion;
@@ -149,10 +150,10 @@ $(document).ready(function() {
   const getLinearEqn = function() {
     const pt1 = getPoint(getRandomInt(-20, 20), getRandomInt(-20, 20));
     const pt2 = getPoint(getRandomInt(-20, 20), getRandomInt(-20, 20));
-    const slope = pt1.x === pt2.x ?
-                Infinity : math.fraction((pt2.y - pt1.y) / (pt2.x - pt1.x));
+    const slope = pt1.x === pt2.x
+                ? Infinity : math.fraction((pt2.y - pt1.y) / (pt2.x - pt1.x));
     const yIntercept = math.subtract(pt2.y, math.multiply(slope, pt2.x));
-    let xIntercept, eqn;
+    let eqn, xIntercept;
 
     if (slope === Infinity) {
       xIntercept = pt1.x;
@@ -171,7 +172,7 @@ $(document).ready(function() {
         break;
     }
 
-    return {pt1, pt2, slope, yIntercept, xIntercept, eqn};
+    return { pt1, pt2, slope, yIntercept, xIntercept, eqn };
   };
 
   // Func. factory for generating lines in some way related to an original line
@@ -183,7 +184,7 @@ $(document).ready(function() {
     while (yIntercept === originalLine.yIntercept) {
       yIntercept = getRandomInt(-20, 20);
     }
-    let slope = originalLine.slope;
+    let slope;
 
     switch (type) {
       case 'perpendicular':
@@ -198,12 +199,11 @@ $(document).ready(function() {
       case 'originalWithSignError':
         yIntercept = originalLine.yIntercept;
         slope = originalLine.slope;
-        if (Math.random() >  1 / 2) {
+        if (Math.random() > 1 / 2) {
           yIntercept = math.unaryMinus(yIntercept);
         } else {
           slope = math.unaryMinus(slope);
         }
-        console.log('slope: ' + slope + ' y-intercept: ' + yIntercept);
         break;
       case 'mistakeXIntForYInt':
         slope = originalLine.slope;
@@ -212,8 +212,9 @@ $(document).ready(function() {
       default:
         return 'no such type';
     }
+
     return formatDiagLinearEqn(slope, yIntercept);
-  }
+  };
 
   const linearEqnWithGivenIntercept = function(intercept) {
     return `y = ${getRandomInt(1, 40)} x + ${intercept}`;
@@ -279,11 +280,12 @@ $(document).ready(function() {
         incorrectAnswers.push(
           getRelatedEqn(originalLine, 'mistakeXIntForYInt'));
         xIntMistakeLinePresent = true;
-      } else if (questionType < 3/ 8) {
+      } else if (questionType < 3 / 8) {
         incorrectAnswers.push(getRelatedEqn(originalLine, 'parallel'));
       } else if (questionType < 5 / 8 && signErrorPresent) {
         incorrectAnswers.push(
-          getRelatedEqn(originalLine, 'originalWithSignError'))
+          getRelatedEqn(originalLine, 'originalWithSignError'));
+        signErrorPresent = true;
       } else if (questionType < 3 / 4 && !perpWithSameYIntPresent) {
         incorrectAnswers.push(
           getRelatedEqn(originalLine, 'perpendicular', 'same y-intercept'));
@@ -329,7 +331,7 @@ $(document).ready(function() {
     } else if (questionType < 2 / 3) {
       question = linearEqnQuestions[1];
     } else {
-      while (!xIntercept) {
+      while (!linearEqn.xIntercept) {
         linearEqn = getLinearEqn();
       }
       question = linearEqnQuestions[2];
@@ -349,7 +351,7 @@ $(document).ready(function() {
         break;
     }
 
-    return {question, answerSet};
+    return { question, answerSet };
   };
 
   const heartOfAlgebra = [getSingleLinearEqnQAS];
